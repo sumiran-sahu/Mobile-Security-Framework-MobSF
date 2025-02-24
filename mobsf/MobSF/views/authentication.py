@@ -95,6 +95,13 @@ def logout_view(request):
 def change_password(request):
     if settings.DISABLE_AUTHENTICATION == '1':
         return redirect('/')
+
+    # Check if the user is in the 'maintainer' or 'viewer' groups
+    if request.user.groups.filter(name=MAINTAINER_GROUP).exists() or request.user.groups.filter(name=VIEWER_GROUP).exists():
+        # If the user is a maintainer or viewer, block password change
+        messages.error(request, 'You do not have permission to change your password.')
+        return redirect('/')  # Or redirect to a page of your choice
+
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -110,12 +117,11 @@ def change_password(request):
                 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
+
     context = {
         'title': 'Change Password',
         'version': settings.VERSION,
         'form': form,
     }
-    return render(
-        request,
-        'auth/change_password.html',
-        context)
+    return render(request, 'auth/change_password.html', context)
+
