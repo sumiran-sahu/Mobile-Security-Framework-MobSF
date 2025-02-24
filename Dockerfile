@@ -63,7 +63,7 @@ RUN ./dependencies.sh
 COPY pyproject.toml .
 RUN poetry config virtualenvs.create false && \
   poetry lock && \
-  poetry install --only main --no-root --no-interaction --no-ansi && \
+  poetry install --only main --no-root --no-interaction --no-ansi -y && \
   poetry cache clear . --all && \
   rm -rf /root/.cache/
 
